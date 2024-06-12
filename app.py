@@ -57,7 +57,11 @@ def load_data():
 
     # Calculate elapsed Days based on the current date
     vessel_details['Elapsed Days'] = (pd.to_datetime('today') - vessel_details['Start Date']).dt.days
-
+    
+    # Calculate total travel time
+    vessel_details['Total Delhi Days'] = (vessel_details['Delhi Date'] - vessel_details['Start Date']).dt.days
+    
+    vessel_details['Elapsed Days Delhi'] = (pd.to_datetime('today') - vessel_details['Dest. Date']).dt.days
     # Organize data into the required format for the main table
     main_data = []
     for _, row in vessel_details.iterrows():
@@ -89,22 +93,29 @@ def positions():
     for _, row in vessel_details.iterrows():
         initial_port = row['Initial Port']
         total_days = row['Total Days']
+        total_delhi_days = row['Total Delhi Days']
         elapsed_days = row['Elapsed Days']
         vessel_name = row['Vessel Name']
-        route_name = choose_route(initial_port)
-        fraction  =  elapsed_days/total_days
-        if row['Start Date'] > pd.to_datetime('today'):
-            if initial_port.lower() == 'ningbo':
-                current_position = (30.051067, 121.717758)
-            elif initial_port.lower() == 'shenzhen':
-                current_position = (22.552016, 113.836183)
-        else:
+        dest_date = row['Dest. Date']
+        elapsed_days_delhi = row['Elapsed Days Delhi']
+        current_date = pd.to_datetime('today')
+
+        if current_date < dest_date:
+            # Calculate position from initial port to Mumbai
             fraction = elapsed_days / total_days
-            if route_name:
-                route = routes[route_name]
-                current_position = calculate_position(route, fraction)
-            else:
-                current_position = (None, None)
+            route_name = choose_route(initial_port)
+            route = routes[route_name] if route_name else []
+            current_position = calculate_position(route, fraction)
+        elif current_date == dest_date:
+            current_position = (18.94275, 72.8541945)
+        elif current_date == row['Delhi Date']:
+            current_position = (28.613425, 77.047111)
+        else:
+            # Calculate position from Mumbai to Delhi
+            mumbai_to_delhi_days = total_delhi_days - total_days
+            fraction = elapsed_days_delhi / mumbai_to_delhi_days
+            route = routes['green']
+            current_position = calculate_position(route, fraction)
         
         vessels_positions.append({
             'vessel_name': vessel_name,
@@ -113,13 +124,14 @@ def positions():
     return vessels_positions, vessel_details
     
 def draw_map():
-    mapObj = folium.Map(location=[13.944599, 99.791178], zoom_start=4)
+    mapObj = folium.Map(location=[13.944599, 99.791178], zoom_start=3.35)
     
     route1 = routes["orange"]
     route2 = routes["blue"]
+    route3 = routes["green"]
     vessel_positions, vessel_details = positions()  # Return vessel_details as well
-    icon_path = 'static/ship.png'  # Ensure this path is correct
-
+    icon_path = 'static/ship.png' 
+    icon_path_2 = 'static/truck.png' 
     for vessel in vessel_positions:
         # Retrieve vessel details for the current vessel
         current_vessel_details = vessel_details.loc[vessel_details['Vessel Name'] == vessel['vessel_name']].iloc[0]
@@ -137,14 +149,22 @@ def draw_map():
         popup_content += f"<b>Delhi Date:</b> {delhi_date}<br>"
 
         # Create marker with unique popup for each vessel
-        folium.Marker(
-            vessel['current_position'],
-            popup=folium.Popup(popup_content, max_width=300),
-            icon=folium.CustomIcon(icon_path, icon_size=(30, 30))  # Adjust icon_size as needed
-        ).add_to(mapObj)
+        if current_vessel_details['Elapsed Days'] <= current_vessel_details['Total Days']:
+            folium.Marker(
+                vessel['current_position'],
+                popup=folium.Popup(popup_content, max_width=300),
+                icon=folium.CustomIcon(icon_path, icon_size=(30, 30))  # Adjust icon_size as needed
+            ).add_to(mapObj)
+        else:
+            folium.Marker(
+                vessel['current_position'],
+                popup=folium.Popup(popup_content, max_width=300),
+                icon=folium.CustomIcon(icon_path_2, icon_size=(30, 30))  # Adjust icon_size as needed
+            ).add_to(mapObj)
 
     AntPath(route1, delay=1000, dash_array=[30, 15], color='orange', weight=3).add_to(mapObj)
     AntPath(route2, delay=1000, dash_array=[30, 15], color='blue', weight=3).add_to(mapObj)
+    AntPath(route3, delay=1000, dash_array=[30, 15], color='green', weight=3).add_to(mapObj)
     
     return mapObj._repr_html_()
 
