@@ -2,71 +2,131 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    height: 100vh; /* Full viewport height */
-    overflow: hidden; /* Prevent scrolling */
+    background-color: #5e99a9;
 }
 
 .container {
     display: flex;
-    height: 100%;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: #5e99a9; /* New aesthetic color */
+}
+
+
+header {
+    background-color: #004466;
+    color: #ffffff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1em;
+}
+
+.logo {
+    flex: 0 0 auto;
+    margin-right: 1em;
+}
+
+.logo a {
+    text-decoration: none; 
+    color: #ffffff;
+}
+
+.logo img {
+    height: 50px;
+}
+
+.title {
+    flex: 0 1 auto;
+}
+
+.spacer {
+    flex: 1;
+}
+
+.main-content {
+    display: flex;
+    flex: 1;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.left-column, .right-column {
+    flex: 1;
+    margin: 10px;
+    position: relative;
 }
 
 #map {
-    height: 100%;
-    width: 60%;
-}
-
-.table-container {
-    width: 40%;
-    overflow-y: auto; /* Enable scrolling for the table */
-    padding: 20px;
-    box-sizing: border-box; /* Include padding in the element's total width and height */
-}
-
-#vessel-contents {
-    display: none;
-    position: absolute; /* Position the overlay relative to the container */
-    top: 0; /* Align the top of the overlay with the top of the container */
-    left: 70%; /* Align the left of the overlay with the left of the container, plus 60px */
-    width: 20%; /* Make the overlay width equal to the container width minus 60px */
-    background-color: white;
-    z-index: 1;
-    padding: 20px; /* Add some padding for better appearance */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add shadow for better visibility */
-}
-
-.table {
-    border-collapse: collapse;
     width: 100%;
-    margin-top: 20px;
+    height: 350px;
+    border: 1px solid #dddddd; /* Light gray */
 }
 
-.table__header {
-    background-color: #f2f2f2;
+table {
+    width: 100%;
+    border-collapse: collapse;
 }
 
-.table__cell {
-    border: 1px solid #ddd;
+table, th, td {
+    border: 1px solid #dddddd; /* Light gray */
     padding: 8px;
 }
 
-.table__header .table__cell {
-    font-weight: bold;
-    text-align: left;
+footer {
+    background-color: #004466; /* Dark blue */
+    color: #ffffff; /* White */
+    text-align: center;
+    padding: 1em 0;
+}
+
+#details-table {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 50%;
+    background-color: #5e99a9;
+    border: 1px solid #dddddd; /* Light gray */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+    display: none;
+}
+
+#details-table h2 {
+    text-align: center;
+    background-color: #004466; /* Dark blue */
+    color: #ffffff; /* White */
+    margin: 0;
+    padding: 0.5em;
+}
+
+.hidden {
+    display: none;
 }
 
 .pagination {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    margin-top: 10px;
+    padding: 10px;
+    background-color: #5e99a9;
 }
 
 .pagination button {
     padding: 5px 10px;
     cursor: pointer;
+    background-color: #5e99a9;
 }
 
-.pagination span {
-    margin: 0 10px;
+.pagination button:disabled {
+    background-color: #5e99a9;
+    cursor: not-allowed;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
 }

@@ -32,18 +32,14 @@ function displayVesselContents(contents, page) {
     const endIndex = Math.min(startIndex + itemsPerPage, contents.length);
 
     for (let i = startIndex; i < endIndex; i++) {
-        contentsList.append('<tr><td class="table__cell">' + contents[i]['Item Name'] + '</td><td class="table__cell">' + contents[i]['Quantity'] + '</td></tr>');
+        contentsList.append('<tr><td>' + contents[i]['Item Name'] + '</td><td>' + contents[i]['Quantity'] + '</td></tr>');
     }
 
     $('#current-page').text(page);
-    $('#prev-page').prop('disabled', page === 1);
-    $('#next-page').prop('disabled', endIndex >= contents.length);
+    $('#prev-btn').prop('disabled', page === 1);
+    $('#next-btn').prop('disabled', endIndex >= contents.length);
 
-    $('#vessel-contents').show();
-}
-
-function hideVesselContents() {
-    $('#vessel-contents').hide();
+    $('#details-table').show();
 }
 
 function nextPage() {
@@ -55,3 +51,9 @@ function prevPage() {
     currentPage--;
     fetchVesselDetails(currentVesselId);
 }
+
+document.addEventListener("click", function(event) {
+    if (!event.target.closest("#details-table") && !event.target.closest("td > a")) {
+        document.getElementById("details-table").style.display = "none";
+    }
+});
